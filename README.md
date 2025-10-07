@@ -5,10 +5,10 @@ A lightweight Chrome browser extension that enables users to create and manage e
 ## Table of Contents
 
 - [Installation](#installation)
+- [Features](#features)
 - [Encryption Approach](#encryption-approach)
 - [Design Decisions](#design-decisions)
 - [Known Limitations](#known-limitations)
-- [Usage](#usage)
 
 
 ---
@@ -46,6 +46,64 @@ A lightweight Chrome browser extension that enables users to create and manage e
    - Visit any website
    - A black floating button (➕) should appear in the bottom-right corner
    - Click the extension icon in the toolbar to access the main interface
+
+---
+
+## Features
+
+### Core Functionality
+
+#### 1. **Create Notes**
+- Click the floating ➕ button on any webpage
+- Type your note in the popup dialog
+- Press `Ctrl/Cmd + Enter` or click "Add Note" to save
+- Notes are automatically encrypted and stored
+
+#### 2. **View Notes**
+- Click the extension icon in the browser toolbar
+- View all notes for the current domain
+- Notes display with timestamp and content
+- Clean, modern interface with smooth animations
+
+#### 3. **Edit Notes** ✏️
+- Hover over any note to reveal the edit button
+- Click the ✏️ (edit) button to enter edit mode
+- Modify the note content inline
+- Changes are validated in real-time
+- Save button is **disabled** if no changes are made
+- Press `Ctrl/Cmd + Enter` to save or `Escape` to cancel or press Buttons 
+- Success message confirms the update
+
+#### 4. **Delete Notes**
+- Hover over any note to reveal the delete button
+- Click the ✖ (delete) button
+- Note is removed with a smooth animation
+- Deletion is immediate and permanent
+
+#### 5. **Search & Filter** 🔍
+- Use the search bar at the top of the popup
+- Live filtering as you type
+- Searches through decrypted note content
+- Shows "No results" message when no matches found
+- Displays filtered count (e.g., "3/10" notes shown)
+
+#### 6. **Domain-Specific Organization**
+- Notes are automatically organized by website domain
+- Each domain has its own separate note collection
+- No manual categorization required
+
+#### 7. **Draggable Floating Button**
+- The ➕ button can be repositioned on the page
+- Click and drag to move it anywhere
+- Position persists while on the same page
+
+### User Experience Features
+
+- **Keyboard Shortcuts**: `Ctrl/Cmd + Enter` to save, `Escape` to cancel
+- **Visual Feedback**: Toast notifications for all actions
+- **Smooth Animations**: Professional transitions and micro-interactions
+- **Empty States**: Helpful messages when no notes exist
+- **Responsive Design**: Clean layout that adapts to content
 
 ---
 
@@ -212,10 +270,12 @@ For production-grade security, consider implementing:
 1. **Storage Quota**
    - `chrome.storage.local` has a 10MB limit
    - Approximately 5,000-10,000 notes depending on average length
+   - No storage quota warning implemented
 
-2. **No Search/Filter Functionality**
-   - All notes for a domain are displayed at once
-   - No built-in search, tags, or categories
+2. **No Advanced Organization**
+   - No tags, categories, or folders
+   - No note priorities or color coding
+   - Search is text-only (no regular expressions)
 
 ### Data Loss Scenarios
 

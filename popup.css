@@ -392,8 +392,36 @@ body {
   line-height: 1.5;
   color: var(--color-text-primary);
   word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
   margin-bottom: var(--space-sm);
-  padding-right: 30px;
+  padding-right: 60px;
+  transition: all var(--transition-base) var(--ease-smooth);
+}
+
+.note-content[contenteditable="true"] {
+  background: var(--color-bg-primary);
+  padding: var(--space-md);
+  padding-right: var(--space-md);
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--color-border-hover);
+  outline: none;
+  margin-bottom: var(--space-md);
+  min-height: 60px;
+  max-height: 200px;
+  overflow-y: auto;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.note-content[contenteditable="true"]:focus {
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Hide buttons during edit mode */
+.note-item.editing .note-actions {
+  display: none;
 }
 
 .note-footer {
@@ -409,12 +437,51 @@ body {
 }
 
 /* ============================================
-   DELETE BUTTON
+   NOTE ACTIONS (EDIT & DELETE BUTTONS)
    ============================================ */
-.delete-btn {
+.note-actions {
   position: absolute;
   top: var(--space-sm);
   right: var(--space-sm);
+  display: flex;
+  gap: var(--space-xs);
+  opacity: 0;
+  transform: translateX(10px);
+  transition: all var(--transition-base) var(--ease-smooth);
+}
+
+.note-item:hover .note-actions {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.edit-btn {
+  background: var(--color-accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  transition: all var(--transition-base) var(--ease-smooth);
+  box-shadow: var(--shadow-sm);
+}
+
+.edit-btn:hover {
+  background: var(--color-primary);
+  transform: scale(1.15) rotate(-10deg);
+  box-shadow: var(--shadow-md);
+}
+
+.edit-btn:active {
+  transform: scale(0.95) rotate(-10deg);
+  transition: transform var(--transition-fast) var(--ease-smooth);
+}
+
+.delete-btn {
   background: var(--color-danger);
   color: white;
   border: none;
@@ -426,14 +493,7 @@ body {
   place-items: center;
   font-size: var(--font-size-lg);
   transition: all var(--transition-base) var(--ease-smooth);
-  opacity: 0;
-  transform: scale(0.8) rotate(0deg);
   box-shadow: var(--shadow-sm);
-}
-
-.note-item:hover .delete-btn {
-  opacity: 1;
-  transform: scale(1) rotate(0deg);
 }
 
 .delete-btn:hover {
@@ -626,6 +686,74 @@ body {
 
 .note-item.deleting {
   animation: fadeOut var(--transition-slow) var(--ease-in) forwards;
+}
+
+.note-item.editing {
+  border-color: var(--color-border-hover);
+  box-shadow: var(--shadow-lg);
+  background: var(--color-bg-secondary);
+}
+
+/* ============================================
+   EDIT MODE ACTIONS
+   ============================================ */
+.note-edit-actions {
+  display: none;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-border);
+  animation: slideInActions var(--transition-base) var(--ease-out);
+}
+
+@keyframes slideInActions {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cancel-edit-btn,
+.save-edit-btn {
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-base) var(--ease-smooth);
+  font-family: inherit;
+}
+
+.cancel-edit-btn {
+  background: #f0f0f0;
+  color: var(--color-text-secondary);
+}
+
+.cancel-edit-btn:hover {
+  background: #e0e0e0;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.save-edit-btn {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.save-edit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.save-edit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* ============================================

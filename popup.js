@@ -161,18 +161,161 @@
     const timestamp = new Date(note.timestamp).toLocaleString();
     
     noteDiv.innerHTML = `
-      <div class="note-content">${escapeHtml(decryptedContent)}</div>
+      <div class="note-content" data-original-content="${escapeHtml(decryptedContent)}">${escapeHtml(decryptedContent)}</div>
       <div class="note-footer">
         <span class="note-timestamp">${timestamp}</span>
       </div>
-      <button class="delete-btn" title="Delete note" data-index="${index}">×</button>
+      <div class="note-actions">
+        <button class="edit-btn" title="Edit note" data-index="${index}">✏️</button>
+        <button class="delete-btn" title="Delete note" data-index="${index}">×</button>
+      </div>
+      <div class="note-edit-actions" style="display: none;">
+        <button class="cancel-edit-btn">Cancel</button>
+        <button class="save-edit-btn" disabled>Save Changes</button>
+      </div>
     `;
+    
+    // Add edit event listener
+    const editBtn = noteDiv.querySelector('.edit-btn');
+    editBtn.addEventListener('click', () => handleEditNote(noteDiv, index));
     
     // Add delete event listener
     const deleteBtn = noteDiv.querySelector('.delete-btn');
     deleteBtn.addEventListener('click', () => handleDeleteNote(index));
     
     return noteDiv;
+  }
+  
+  /**
+   * Handle editing a note
+   * @param {HTMLElement} noteElement - The note element to edit
+   * @param {number} index - Index of note to edit
+   */
+  function handleEditNote(noteElement, index) {
+    // Get elements
+    const contentDiv = noteElement.querySelector('.note-content');
+    const actionsDiv = noteElement.querySelector('.note-actions');
+    const editActionsDiv = noteElement.querySelector('.note-edit-actions');
+    const saveBtn = editActionsDiv.querySelector('.save-edit-btn');
+    const cancelBtn = editActionsDiv.querySelector('.cancel-edit-btn');
+    
+    // Store original content
+    const originalContent = contentDiv.getAttribute('data-original-content');
+    
+    // Make content editable
+    contentDiv.contentEditable = true;
+    contentDiv.focus();
+    noteElement.classList.add('editing');
+    
+    // Show edit actions, hide normal actions
+    actionsDiv.style.display = 'none';
+    editActionsDiv.style.display = 'flex';
+    
+    // Move cursor to end of content
+    const range = document.createRange();
+    const selection = window.getSelection();
+    range.selectNodeContents(contentDiv);
+    range.collapse(false);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    
+    // Listen for content changes
+    const checkForChanges = () => {
+      const currentContent = contentDiv.textContent.trim();
+      const hasChanged = currentContent !== originalContent && currentContent.length > 0;
+      saveBtn.disabled = !hasChanged;
+    };
+    
+    contentDiv.addEventListener('input', checkForChanges);
+    contentDiv.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        cancelEdit();
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        if (!saveBtn.disabled) {
+          saveEdit();
+        }
+      }
+    });
+    
+    // Cancel edit function
+    const cancelEdit = () => {
+      contentDiv.contentEditable = false;
+      contentDiv.textContent = originalContent;
+      noteElement.classList.remove('editing');
+      actionsDiv.style.display = 'flex';
+      editActionsDiv.style.display = 'none';
+      contentDiv.removeEventListener('input', checkForChanges);
+    };
+    
+    // Save edit function
+    const saveEdit = async () => {
+      const newContent = contentDiv.textContent.trim();
+      
+      if (!newContent) {
+        showFeedback('Note cannot be empty', 'error');
+        return;
+      }
+      
+      try {
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+        
+        // Update note in storage
+        await updateNote(index, newContent);
+        
+        // Update the data attribute
+        contentDiv.setAttribute('data-original-content', newContent);
+        
+        // Exit edit mode
+        contentDiv.contentEditable = false;
+        noteElement.classList.remove('editing');
+        actionsDiv.style.display = 'flex';
+        editActionsDiv.style.display = 'none';
+        
+        // Clean up event listener
+        contentDiv.removeEventListener('input', checkForChanges);
+        
+        showFeedback('Note updated successfully!');
+        
+        // Reload notes to reflect changes
+        await loadNotes();
+        
+        // Re-apply search filter if search is active
+        if (searchInput.value.trim()) {
+          handleSearch();
+        }
+        
+      } catch (error) {
+        console.error('Error updating note:', error);
+        showFeedback('Error updating note', 'error');
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Changes';
+      }
+    };
+    
+    // Add event listeners to buttons
+    cancelBtn.addEventListener('click', cancelEdit);
+    saveBtn.addEventListener('click', saveEdit);
+  }
+  
+  /**
+   * Update a note in storage
+   * @param {number} index - Index of note to update
+   * @param {string} newContent - New content for the note
+   */
+  async function updateNote(index, newContent) {
+    const result = await chrome.storage.local.get(['notes']);
+    const allNotes = result.notes || {};
+    
+    if (allNotes[currentDomain] && allNotes[currentDomain][index]) {
+      // Encrypt the new content
+      const encryptedContent = encryptText(newContent);
+      
+      // Update the note (keep original timestamp)
+      allNotes[currentDomain][index].content = encryptedContent;
+      
+      await chrome.storage.local.set({ notes: allNotes });
+    }
   }
   
   /**
