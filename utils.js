@@ -13,22 +13,22 @@ const CIPHER_SHIFT = 7; // Caesar cipher shift value
 function encryptText(text) {
   if (!text) return '';
   
-  // Apply Caesar cipher
-  let caesarEncrypted = '';
-  for (let i = 0; i < text.length; i++) {
-    let char = text[i];
-    let code = text.charCodeAt(i);
-    
-    // Shift character code
-    caesarEncrypted += String.fromCharCode(code + CIPHER_SHIFT);
-  }
-  
-  // Apply Base64 encoding
   try {
+    // First encode to UTF-8 to handle Unicode characters
+    const utf8Encoded = encodeURIComponent(text);
+    
+    // Apply Caesar cipher
+    let caesarEncrypted = '';
+    for (let i = 0; i < utf8Encoded.length; i++) {
+      let code = utf8Encoded.charCodeAt(i);
+      caesarEncrypted += String.fromCharCode(code + CIPHER_SHIFT);
+    }
+    
+    // Apply Base64 encoding
     return btoa(caesarEncrypted);
   } catch (e) {
     console.error('Encryption error:', e);
-    return btoa(unescape(encodeURIComponent(caesarEncrypted)));
+    return '';
   }
 }
 
@@ -42,21 +42,17 @@ function decryptText(encryptedText) {
   
   try {
     // Decode Base64
-    let caesarEncrypted;
-    try {
-      caesarEncrypted = atob(encryptedText);
-    } catch (e) {
-      caesarEncrypted = decodeURIComponent(escape(atob(encryptedText)));
-    }
+    const caesarEncrypted = atob(encryptedText);
     
     // Reverse Caesar cipher
-    let decrypted = '';
+    let utf8Encoded = '';
     for (let i = 0; i < caesarEncrypted.length; i++) {
       let code = caesarEncrypted.charCodeAt(i);
-      decrypted += String.fromCharCode(code - CIPHER_SHIFT);
+      utf8Encoded += String.fromCharCode(code - CIPHER_SHIFT);
     }
     
-    return decrypted;
+    // Decode from UTF-8 to handle Unicode characters
+    return decodeURIComponent(utf8Encoded);
   } catch (e) {
     console.error('Decryption error:', e);
     return '';
