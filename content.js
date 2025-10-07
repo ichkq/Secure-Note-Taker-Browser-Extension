@@ -73,7 +73,8 @@
     popup.id = 'secure-note-popup';
     popup.className = 'secure-note-popup';
     
-    const currentDomain = window.location.hostname;
+    // Sanitize domain name before display
+    const currentDomain = sanitizeText(window.location.hostname);
     
     popup.innerHTML = `
       <div class="secure-note-popup-overlay"></div>
@@ -88,6 +89,7 @@
             class="secure-note-popup-textarea" 
             placeholder="Write your note here..."
             rows="4"
+            maxlength="5000"
           ></textarea>
         </div>
         <div class="secure-note-popup-footer">
@@ -121,6 +123,17 @@
     });
     
     return popup;
+  }
+  
+  /**
+   * Sanitizes text to prevent XSS attacks
+   * @param {string} text - Text to sanitize
+   * @returns {string} - Sanitized text
+   */
+  function sanitizeText(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
   }
   
   /**
