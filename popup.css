@@ -24,7 +24,7 @@ body {
 
 /* Header */
 .header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
   color: white;
   padding: 16px;
   text-align: center;
@@ -64,7 +64,7 @@ body {
 
 .note-input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #333;
 }
 
 .note-input::placeholder {
@@ -85,13 +85,13 @@ body {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
   color: white;
 }
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .btn-primary:active {
@@ -125,7 +125,7 @@ body {
 }
 
 .note-count {
-  background: #667eea;
+  background: #333;
   color: white;
   padding: 2px 8px;
   border-radius: 12px;
@@ -151,8 +151,8 @@ body {
 
 .search-input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #333;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
 }
 
 .search-input::placeholder {
@@ -186,7 +186,7 @@ body {
 
 .note-item:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-color: #667eea;
+  border-color: #333;
 }
 
 .note-content {

@@ -9,8 +9,8 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -23,7 +23,7 @@
 
 .secure-note-btn:hover {
   transform: scale(1.1) rotate(90deg);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
 }
 
 .secure-note-btn:active {
@@ -86,7 +86,7 @@
 
 /* Popup Header */
 .secure-note-popup-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
   color: white;
   padding: 16px;
   position: relative;
@@ -155,7 +155,7 @@
 
 .secure-note-popup-textarea:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #333;
 }
 
 .secure-note-popup-textarea::placeholder {
@@ -191,13 +191,13 @@
 }
 
 .secure-note-popup-btn-save {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
   color: white;
 }
 
 .secure-note-popup-btn-save:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .secure-note-popup-btn-save:active {
