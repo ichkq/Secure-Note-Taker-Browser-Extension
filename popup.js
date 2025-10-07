@@ -6,8 +6,6 @@
   'use strict';
   
   // DOM Elements
-  const noteInput = document.getElementById('noteInput');
-  const addNoteBtn = document.getElementById('addNoteBtn');
   const notesList = document.getElementById('notesList');
   const emptyState = document.getElementById('emptyState');
   const currentDomainEl = document.getElementById('currentDomain');
@@ -25,14 +23,6 @@
     
     // Load notes for current domain
     await loadNotes();
-    
-    // Add event listeners
-    addNoteBtn.addEventListener('click', handleAddNote);
-    noteInput.addEventListener('keydown', handleKeyPress);
-    noteInput.addEventListener('input', updateAddButtonState);
-    
-    // Focus on input
-    noteInput.focus();
   }
   
   /**
@@ -129,69 +119,6 @@
   }
   
   /**
-   * Handle adding a new note
-   */
-  async function handleAddNote() {
-    const content = noteInput.value.trim();
-    
-    if (!content) {
-      noteInput.focus();
-      return;
-    }
-    
-    // Disable button during save
-    addNoteBtn.disabled = true;
-    
-    try {
-      // Encrypt the note content
-      const encryptedContent = encryptText(content);
-      
-      // Create note object
-      const note = {
-        content: encryptedContent,
-        timestamp: Date.now(),
-        domain: currentDomain
-      };
-      
-      // Save to storage
-      await saveNote(note);
-      
-      // Clear input
-      noteInput.value = '';
-      
-      // Reload notes
-      await loadNotes();
-      
-      // Show success feedback
-      showFeedback('Note added successfully!');
-      
-    } catch (error) {
-      console.error('Error adding note:', error);
-      showFeedback('Error adding note', 'error');
-    } finally {
-      addNoteBtn.disabled = false;
-      noteInput.focus();
-    }
-  }
-  
-  /**
-   * Save a note to storage
-   * @param {Object} note - Note object to save
-   */
-  async function saveNote(note) {
-    const result = await chrome.storage.local.get(['notes']);
-    const allNotes = result.notes || {};
-    
-    if (!allNotes[currentDomain]) {
-      allNotes[currentDomain] = [];
-    }
-    
-    allNotes[currentDomain].push(note);
-    
-    await chrome.storage.local.set({ notes: allNotes });
-  }
-  
-  /**
    * Handle deleting a note
    * @param {number} index - Index of note to delete
    */
@@ -239,25 +166,6 @@
       
       await chrome.storage.local.set({ notes: allNotes });
     }
-  }
-  
-  /**
-   * Handle keyboard shortcuts
-   * @param {KeyboardEvent} e - Keyboard event
-   */
-  function handleKeyPress(e) {
-    // Ctrl/Cmd + Enter to save
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-      e.preventDefault();
-      handleAddNote();
-    }
-  }
-  
-  /**
-   * Update add button state based on input
-   */
-  function updateAddButtonState() {
-    addNoteBtn.disabled = !noteInput.value.trim();
   }
   
   /**
