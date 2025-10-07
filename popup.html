@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure Note Taker</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>Secure Notes</h1>
+      <div id="currentDomain" class="domain"></div>
+    </div>
+
+    <!-- Add Note Form -->
+    <div class="add-note-section">
+      <textarea 
+        id="noteInput" 
+        class="note-input" 
+        placeholder="Write your note here..."
+        rows="4"
+      ></textarea>
+      <button id="addNoteBtn" class="btn btn-primary">
+        <span>Add Note</span>
+      </button>
+    </div>
+
+    <!-- Notes List -->
+    <div class="notes-section">
+      <div class="notes-header">
+        <h2>Your Notes</h2>
+        <span id="noteCount" class="note-count">0</span>
+      </div>
+      
+      <div id="notesList" class="notes-list">
+        <!-- Notes will be dynamically inserted here -->
+      </div>
+      
+      <div id="emptyState" class="empty-state">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 11L12 14L22 4" stroke="#ccc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M21 12V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3H16" stroke="#ccc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <p>No notes yet for this website</p>
+        <small>Add your first note above</small>
+      </div>
+    </div>
+  </div>
+
+  <script src="utils.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
+
