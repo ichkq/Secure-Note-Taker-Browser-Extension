@@ -86,10 +86,13 @@
         </div>
         <div class="secure-note-popup-body">
           <textarea 
+            id="secure-note-textarea"
+            name="note-content"
             class="secure-note-popup-textarea" 
             placeholder="Write your note here..."
             rows="4"
             maxlength="5000"
+            autocomplete="off"
           ></textarea>
         </div>
         <div class="secure-note-popup-footer">
