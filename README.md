@@ -44,7 +44,7 @@ A lightweight Chrome browser extension that enables users to create and manage e
 
 5. **Verify Installation**
    - Visit any website
-   - A purple floating button (➕) should appear in the bottom-right corner
+   - A black floating button (➕) should appear in the bottom-right corner
    - Click the extension icon in the toolbar to access the main interface
 
 ---
@@ -222,32 +222,3 @@ For production-grade security, consider implementing:
 1. **Browser Data Clear**: Notes deleted if user clears browser data/cache
 2. **Extension Uninstall**: All notes are permanently removed
 3. **No Backup Mechanism**: No automatic or manual backup system
-
----
-
-## Usage
-
-### Adding Notes
-
-**Via Floating Button:**
-1. Navigate to any website
-2. Click the purple ➕ button (bottom-right corner)
-3. Enter your note in the dialog
-4. Press `Ctrl/Cmd + Enter` or click "Add Note"
-
-**Via Extension Popup:**
-1. Click the extension icon in the toolbar
-2. Type your note in the text area
-3. Click "Add Note" or press `Ctrl/Cmd + Enter`
-
-### Viewing Notes
-
-1. Click the extension icon
-2. All notes for the current domain are displayed with timestamps
-3. Notes are automatically decrypted for display
-
-### Deleting Notes
-
-1. Open the extension popup
-2. Hover over any note
-3. Click the red ✕ button in the top-right corner of the note
