@@ -9,7 +9,7 @@ A lightweight Chrome browser extension that enables users to create and manage e
 - [Design Decisions](#design-decisions)
 - [Known Limitations](#known-limitations)
 - [Usage](#usage)
-- [Technical Specifications](#technical-specifications)
+
 
 ---
 
@@ -251,69 +251,3 @@ For production-grade security, consider implementing:
 1. Open the extension popup
 2. Hover over any note
 3. Click the red ✕ button in the top-right corner of the note
-
----
-
-## Technical Specifications
-
-| Specification | Value |
-|--------------|-------|
-| **Manifest Version** | V3 |
-| **Primary Language** | Vanilla JavaScript (ES6+) |
-| **Storage API** | `chrome.storage.local` |
-| **Required Permissions** | `storage`, `activeTab` |
-| **Encryption Method** | Caesar Cipher (shift 7) + Base64 |
-| **Architecture** | Content Script + Background Service Worker + Popup UI |
-| **File Structure** | 8 core files (~10KB total) |
-
-### File Structure
-
-```
-Secure-Note-Taker-Browser-Extension-main/
-├── manifest.json          # Extension configuration (Manifest V3)
-├── background.js          # Service worker for message handling
-├── content.js             # Injected floating button UI
-├── content.css            # Styles for floating button
-├── popup.html             # Extension popup interface
-├── popup.js               # Popup logic and note management
-├── popup.css              # Popup styles
-├── utils.js               # Encryption/decryption utilities
-└── icons/                 # Extension icons (16x16, 48x48, 128x128)
-```
-
-### Browser Permissions
-
-- **`storage`**: Store and retrieve encrypted notes
-- **`activeTab`**: Access current tab's domain for note organization
-
----
-
-## Development
-
-### Local Development Setup
-
-1. Make changes to source files
-2. Navigate to `chrome://extensions/`
-3. Click the refresh icon (🔄) on the extension card
-4. Test changes in browser
-
-### Debugging
-
-- **Popup**: Right-click extension icon → "Inspect popup"
-- **Content Script**: Open DevTools on any webpage → Console tab
-- **Background Worker**: `chrome://extensions/` → "Inspect views: service worker"
-
----
-
-## Support
-
-For issues or questions:
-1. Check browser console for error messages
-2. Verify extension permissions in `chrome://extensions/`
-3. Ensure you're using a supported browser version
-
----
-
-**Version**: 1.0.0  
-**License**: For educational and personal use  
-**Last Updated**: October 2025
