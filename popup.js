@@ -10,9 +10,11 @@
   const emptyState = document.getElementById('emptyState');
   const currentDomainEl = document.getElementById('currentDomain');
   const noteCountEl = document.getElementById('noteCount');
+  const searchInput = document.getElementById('searchInput');
   
-  // Current domain
+  // Current domain and notes
   let currentDomain = '';
+  let allDomainNotes = [];
   
   /**
    * Initialize the popup
@@ -23,6 +25,9 @@
     
     // Load notes for current domain
     await loadNotes();
+    
+    // Add search event listener
+    searchInput.addEventListener('input', handleSearch);
   }
   
   /**
@@ -52,9 +57,9 @@
     try {
       const result = await chrome.storage.local.get(['notes']);
       const allNotes = result.notes || {};
-      const domainNotes = allNotes[currentDomain] || [];
+      allDomainNotes = allNotes[currentDomain] || [];
       
-      renderNotes(domainNotes);
+      renderNotes(allDomainNotes);
     } catch (error) {
       console.error('Error loading notes:', error);
       showEmptyState();
@@ -62,15 +67,66 @@
   }
   
   /**
+   * Handle search input
+   */
+  function handleSearch() {
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    
+    if (!searchTerm) {
+      // Show all notes if search is empty
+      renderNotes(allDomainNotes);
+      return;
+    }
+    
+    // Filter notes based on search term
+    const filteredNotes = allDomainNotes.filter(note => {
+      const decryptedContent = decryptText(note.content).toLowerCase();
+      return decryptedContent.includes(searchTerm);
+    });
+    
+    renderNotes(filteredNotes);
+    
+    // Show "no results" message if no matches (even if there are no notes at all)
+    if (filteredNotes.length === 0) {
+      showNoResultsMessage();
+    }
+  }
+  
+  /**
+   * Show no search results message
+   */
+  function showNoResultsMessage() {
+    notesList.innerHTML = `
+      <div style="text-align: center; padding: 40px 20px; color: #999;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity: 0.5; margin-bottom: 12px;">
+          <circle cx="11" cy="11" r="8" stroke="#ccc" stroke-width="2"/>
+          <path d="M21 21L16.65 16.65" stroke="#ccc" stroke-width="2" stroke-linecap="round"/>
+          <line x1="8" y1="11" x2="14" y2="11" stroke="#ccc" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <p style="font-size: 14px; color: #666;">No notes match your search</p>
+      </div>
+    `;
+    notesList.style.display = 'block';
+    emptyState.classList.remove('show');
+  }
+  
+  /**
    * Render notes to the DOM
-   * @param {Array} notes - Array of note objects
+   * @param {Array} notes - Array of note objects to display
    */
   function renderNotes(notes) {
     // Clear existing notes
     notesList.innerHTML = '';
     
-    // Update note count
-    noteCountEl.textContent = notes.length;
+    // Update note count to show total and filtered count
+    const totalCount = allDomainNotes.length;
+    const filteredCount = notes.length;
+    
+    if (filteredCount !== totalCount && searchInput.value.trim()) {
+      noteCountEl.textContent = `${filteredCount}/${totalCount}`;
+    } else {
+      noteCountEl.textContent = totalCount;
+    }
     
     if (notes.length === 0) {
       showEmptyState();
@@ -79,9 +135,10 @@
     
     hideEmptyState();
     
-    // Render each note
-    notes.forEach((note, index) => {
-      const noteElement = createNoteElement(note, index);
+    // Render each note - use original index from allDomainNotes for deletion
+    notes.forEach((note) => {
+      const originalIndex = allDomainNotes.indexOf(note);
+      const noteElement = createNoteElement(note, originalIndex);
       notesList.appendChild(noteElement);
     });
   }
@@ -139,6 +196,11 @@
       
       // Reload notes
       await loadNotes();
+      
+      // Re-apply search filter if search is active
+      if (searchInput.value.trim()) {
+        handleSearch();
+      }
       
       showFeedback('Note deleted');
       

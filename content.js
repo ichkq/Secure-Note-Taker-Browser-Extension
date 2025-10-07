@@ -42,12 +42,26 @@
       document.body.appendChild(popup);
     }
     
+    // Reset popup state before showing
+    const textarea = popup.querySelector('textarea');
+    const saveBtn = popup.querySelector('.secure-note-popup-btn-save');
+    const message = popup.querySelector('.secure-note-popup-message');
+    
+    if (textarea) textarea.value = '';
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Add Note';
+    }
+    if (message) {
+      message.textContent = '';
+      message.style.display = 'none';
+    }
+    
     // Show popup with animation
     popup.style.display = 'flex';
     setTimeout(() => popup.classList.add('show'), 10);
     
     // Focus on textarea
-    const textarea = popup.querySelector('textarea');
     if (textarea) textarea.focus();
   }
   
@@ -121,7 +135,16 @@
       if (textarea) textarea.value = '';
       // Clear message
       const message = popup.querySelector('.secure-note-popup-message');
-      if (message) message.textContent = '';
+      if (message) {
+        message.textContent = '';
+        message.style.display = 'none';
+      }
+      // Reset button state
+      const saveBtn = popup.querySelector('.secure-note-popup-btn-save');
+      if (saveBtn) {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Add Note';
+      }
     }, 300);
   }
   
