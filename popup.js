@@ -97,13 +97,13 @@
    */
   function showNoResultsMessage() {
     notesList.innerHTML = `
-      <div style="text-align: center; padding: 40px 20px; color: #999;">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity: 0.5; margin-bottom: 12px;">
+      <div class="no-results-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="11" cy="11" r="8" stroke="#ccc" stroke-width="2"/>
           <path d="M21 21L16.65 16.65" stroke="#ccc" stroke-width="2" stroke-linecap="round"/>
           <line x1="8" y1="11" x2="14" y2="11" stroke="#ccc" stroke-width="2" stroke-linecap="round"/>
         </svg>
-        <p style="font-size: 14px; color: #666;">No notes match your search</p>
+        <p>No notes match your search</p>
       </div>
     `;
     notesList.style.display = 'block';

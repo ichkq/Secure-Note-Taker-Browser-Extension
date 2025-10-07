@@ -36,6 +36,34 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     sendResponse({ success: false, message: 'Cannot open popup programmatically in Manifest V3' });
   }
   
+  if (request.action === 'saveNote') {
+    // Handle saving note from content script
+    const { domain, note } = request;
+    
+    chrome.storage.local.get(['notes'], (result) => {
+      const allNotes = result.notes || {};
+      
+      // Add note to domain
+      if (!allNotes[domain]) {
+        allNotes[domain] = [];
+      }
+      allNotes[domain].push(note);
+      
+      // Save to storage
+      chrome.storage.local.set({ notes: allNotes }, () => {
+        if (chrome.runtime.lastError) {
+          console.error('Error saving note:', chrome.runtime.lastError);
+          sendResponse({ success: false, error: chrome.runtime.lastError.message });
+        } else {
+          console.log('Note saved successfully for domain:', domain);
+          sendResponse({ success: true });
+        }
+      });
+    });
+    
+    return true; // Keep message channel open for async response
+  }
+  
   return true; // Keep message channel open for async response
 });
 

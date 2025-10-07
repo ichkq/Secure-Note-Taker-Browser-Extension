@@ -181,24 +181,22 @@
         domain: domain
       };
       
-      // Get existing notes
-      const result = await chrome.storage.local.get(['notes']);
-      const allNotes = result.notes || {};
+      // Send message to background script to save note
+      const response = await chrome.runtime.sendMessage({
+        action: 'saveNote',
+        domain: domain,
+        note: note
+      });
       
-      // Add note to domain
-      if (!allNotes[domain]) {
-        allNotes[domain] = [];
+      if (response && response.success) {
+        // Show success message
+        showPopupMessage(messageEl, '✅ Note saved successfully!', 'success');
+        
+        // Close popup after short delay
+        setTimeout(() => closeNotePopup(popup), 1000);
+      } else {
+        throw new Error(response?.error || 'Failed to save note');
       }
-      allNotes[domain].push(note);
-      
-      // Save to storage
-      await chrome.storage.local.set({ notes: allNotes });
-      
-      // Show success message
-      showPopupMessage(messageEl, '✅ Note saved successfully!', 'success');
-      
-      // Close popup after short delay
-      setTimeout(() => closeNotePopup(popup), 1000);
       
     } catch (error) {
       console.error('Error saving note:', error);

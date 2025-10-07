@@ -1,6 +1,90 @@
 /**
  * Popup Styles - Main extension interface
+ * Advanced CSS with Grid, Custom Properties, and Smooth Animations
  */
+
+/* ============================================
+   CSS CUSTOM PROPERTIES (VARIABLES)
+   ============================================ */
+:root {
+  /* Color Palette */
+  --color-primary: #1a1a1a;
+  --color-primary-dark: #000000;
+  --color-accent: #333333;
+  --color-danger: #ff4757;
+  --color-danger-hover: #ff3838;
+  --color-success: #10b981;
+  --color-success-light: #d1fae5;
+  --color-success-dark: #065f46;
+  
+  /* Neutrals */
+  --color-bg-primary: #f5f7fa;
+  --color-bg-secondary: #ffffff;
+  --color-text-primary: #333333;
+  --color-text-secondary: #666666;
+  --color-text-tertiary: #999999;
+  --color-border: #e0e0e0;
+  --color-border-hover: #333333;
+  
+  /* Spacing Scale */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-2xl: 24px;
+  --space-3xl: 32px;
+  --space-4xl: 40px;
+  
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.2);
+  --shadow-2xl: 0 20px 60px rgba(0, 0, 0, 0.3);
+  
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  --gradient-overlay: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.05) 100%);
+  
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
+  --font-size-base: 13px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* Transitions & Animations */
+  --transition-fast: 150ms;
+  --transition-base: 250ms;
+  --transition-slow: 350ms;
+  --transition-slower: 500ms;
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  /* Z-index Scale */
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+}
 
 * {
   margin: 0;
@@ -11,91 +95,143 @@
 body {
   width: 300px;
   min-height: 400px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background: #f5f7fa;
-  color: #333;
+  font-family: var(--font-family);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  overflow: hidden;
 }
 
+/* ============================================
+   LAYOUT
+   ============================================ */
 .container {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto 1fr;
   height: 100%;
+  animation: containerFadeIn var(--transition-slow) var(--ease-out);
 }
 
-/* Header */
+/* ============================================
+   HEADER
+   ============================================ */
 .header {
-  background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+  background: var(--gradient-primary);
   color: white;
-  padding: 16px;
+  padding: var(--space-lg);
   text-align: center;
+  position: relative;
+  overflow: hidden;
+  animation: slideDown var(--transition-slow) var(--ease-out);
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: shimmer 3s infinite;
 }
 
 .header h1 {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 6px;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-sm);
+  letter-spacing: -0.3px;
+  animation: fadeInUp var(--transition-slow) var(--ease-out) 0.1s both;
 }
 
 .domain {
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   opacity: 0.9;
-  font-weight: 400;
+  font-weight: var(--font-weight-normal);
   word-break: break-all;
+  animation: fadeInUp var(--transition-slow) var(--ease-out) 0.2s both;
 }
 
-/* Add Note Section */
+/* ============================================
+   ADD NOTE SECTION
+   ============================================ */
 .add-note-section {
-  padding: 16px;
-  background: white;
-  border-bottom: 1px solid #e0e0e0;
+  padding: var(--space-lg);
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .note-input {
   width: 100%;
-  padding: 10px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
+  padding: var(--space-md);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
   font-family: inherit;
-  font-size: 14px;
+  font-size: var(--font-size-md);
   resize: vertical;
   min-height: 80px;
-  transition: border-color 0.3s ease;
+  transition: all var(--transition-base) var(--ease-smooth);
 }
 
 .note-input:focus {
   outline: none;
-  border-color: #333;
+  border-color: var(--color-border-hover);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+  transform: scale(1.01);
 }
 
 .note-input::placeholder {
-  color: #999;
+  color: var(--color-text-tertiary);
 }
 
-/* Buttons */
+/* ============================================
+   BUTTONS
+   ============================================ */
 .btn {
   width: 100%;
-  padding: 10px 16px;
+  padding: var(--space-md) var(--space-lg);
   border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 10px;
+  transition: all var(--transition-base) var(--ease-smooth);
+  margin-top: var(--space-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width var(--transition-slow) var(--ease-out), 
+              height var(--transition-slow) var(--ease-out);
+}
+
+.btn:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+  background: var(--gradient-primary);
   color: white;
 }
 
 .btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
 .btn-primary:active {
   transform: translateY(0);
+  transition: transform var(--transition-fast) var(--ease-smooth);
 }
 
 .btn-primary:disabled {
@@ -104,70 +240,106 @@ body {
   transform: none;
 }
 
-/* Notes Section */
+/* ============================================
+   NOTES SECTION
+   ============================================ */
 .notes-section {
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
+  padding: var(--space-lg);
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  gap: var(--space-md);
+  animation: slideUp var(--transition-slow) var(--ease-out) 0.3s both;
 }
 
 .notes-header {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: center;
-  margin-bottom: 12px;
+  gap: var(--space-md);
+  animation: fadeInUp var(--transition-slow) var(--ease-out) 0.4s both;
 }
 
 .notes-header h2 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  letter-spacing: -0.2px;
 }
 
 .note-count {
-  background: #333;
+  background: var(--color-accent);
   color: white;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 600;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  min-width: 24px;
+  text-align: center;
+  animation: scaleIn var(--transition-base) var(--ease-bounce);
+  transition: all var(--transition-fast) var(--ease-smooth);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Search Container */
+.note-count:hover {
+  transform: scale(1.15) rotate(-5deg);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   SEARCH CONTAINER
+   ============================================ */
 .search-container {
   position: relative;
-  margin-bottom: 12px;
+  animation: fadeInUp var(--transition-slow) var(--ease-out) 0.5s both;
 }
 
 .search-input {
   width: 100%;
-  padding: 8px 12px 8px 36px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
+  padding: var(--space-sm) var(--space-md) var(--space-sm) 36px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
   font-family: inherit;
-  font-size: 13px;
-  transition: all 0.3s ease;
+  font-size: var(--font-size-base);
+  transition: all var(--transition-base) var(--ease-smooth);
+  background: var(--color-bg-secondary);
 }
 
 .search-input:focus {
   outline: none;
-  border-color: #333;
-  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+  border-color: var(--color-border-hover);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
 }
 
 .search-input::placeholder {
-  color: #999;
+  color: var(--color-text-tertiary);
 }
 
 .search-icon {
   position: absolute;
-  left: 10px;
+  left: var(--space-md);
   top: 50%;
   transform: translateY(-50%);
   pointer-events: none;
+  transition: all var(--transition-base) var(--ease-smooth);
+  opacity: 0.6;
+  animation: fadeIn var(--transition-base) var(--ease-out) 0.6s both;
 }
 
-/* Notes List */
+.search-input:focus ~ .search-icon {
+  transform: translateY(-50%) scale(1.15) rotate(5deg);
+  opacity: 1;
+}
+
+.search-input:not(:placeholder-shown) ~ .search-icon {
+  opacity: 0.8;
+}
+
+/* ============================================
+   NOTES LIST
+   ============================================ */
 .notes-list {
   display: flex;
   flex-direction: column;
@@ -175,26 +347,52 @@ body {
 }
 
 .note-item {
-  background: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 12px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
   position: relative;
-  transition: all 0.3s ease;
-  animation: slideIn 0.3s ease;
+  transition: all var(--transition-base) var(--ease-smooth);
+  animation: slideIn var(--transition-slow) var(--ease-out) both;
+}
+
+/* Stagger animation for multiple notes */
+.note-item:nth-child(1) { animation-delay: 0s; }
+.note-item:nth-child(2) { animation-delay: 0.05s; }
+.note-item:nth-child(3) { animation-delay: 0.1s; }
+.note-item:nth-child(4) { animation-delay: 0.15s; }
+.note-item:nth-child(5) { animation-delay: 0.2s; }
+.note-item:nth-child(n+6) { animation-delay: 0.25s; }
+
+.note-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--gradient-primary);
+  transform: scaleY(0);
+  transition: transform var(--transition-base) var(--ease-smooth);
+  transform-origin: bottom;
 }
 
 .note-item:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-color: #333;
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border-hover);
+  transform: translateX(2px);
+}
+
+.note-item:hover::before {
+  transform: scaleY(1);
 }
 
 .note-content {
-  font-size: 14px;
+  font-size: var(--font-size-md);
   line-height: 1.5;
-  color: #333;
+  color: var(--color-text-primary);
   word-wrap: break-word;
-  margin-bottom: 8px;
+  margin-bottom: var(--space-sm);
   padding-right: 30px;
 }
 
@@ -202,82 +400,143 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 11px;
-  color: #999;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
 }
 
 .note-timestamp {
   font-style: italic;
 }
 
+/* ============================================
+   DELETE BUTTON
+   ============================================ */
 .delete-btn {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  background: #ff4757;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  background: var(--color-danger);
   color: white;
   border: none;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   width: 24px;
   height: 24px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  transition: all 0.3s ease;
+  display: grid;
+  place-items: center;
+  font-size: var(--font-size-lg);
+  transition: all var(--transition-base) var(--ease-smooth);
   opacity: 0;
+  transform: scale(0.8) rotate(0deg);
+  box-shadow: var(--shadow-sm);
 }
 
 .note-item:hover .delete-btn {
   opacity: 1;
+  transform: scale(1) rotate(0deg);
 }
 
 .delete-btn:hover {
-  background: #ff3838;
-  transform: scale(1.1);
+  background: var(--color-danger-hover);
+  transform: scale(1.15) rotate(90deg);
+  box-shadow: var(--shadow-md);
 }
 
 .delete-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.95) rotate(90deg);
+  transition: transform var(--transition-fast) var(--ease-smooth);
 }
 
-/* Empty State */
+/* ============================================
+   EMPTY STATE & NO RESULTS
+   ============================================ */
 .empty-state {
   display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
+  grid-template-rows: auto auto auto;
+  place-items: center;
+  padding: var(--space-4xl) var(--space-xl);
   text-align: center;
-  color: #999;
+  color: var(--color-text-tertiary);
+  gap: var(--space-lg);
+}
+
+.no-results-state {
+  display: grid;
+  grid-template-rows: auto auto;
+  place-items: center;
+  padding: var(--space-4xl) var(--space-xl);
+  text-align: center;
+  color: var(--color-text-tertiary);
+  gap: var(--space-lg);
+  animation: fadeIn var(--transition-slower) var(--ease-out);
+}
+
+.no-results-state svg {
+  opacity: 0.4;
+  animation: floatSlow 3s ease-in-out infinite;
+  transition: all var(--transition-base) var(--ease-smooth);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.no-results-state:hover svg {
+  opacity: 0.6;
+  transform: translateY(-5px) scale(1.05);
+}
+
+.no-results-state p {
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  animation: fadeIn var(--transition-slower) var(--ease-out) 0.2s both;
 }
 
 .empty-state.show {
-  display: flex;
+  display: grid;
+  animation: fadeIn var(--transition-slower) var(--ease-out);
 }
 
 .empty-state svg {
-  margin-bottom: 16px;
-  opacity: 0.5;
+  opacity: 0.4;
+  animation: floatSlow 3s ease-in-out infinite;
+  transition: all var(--transition-base) var(--ease-smooth);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.empty-state:hover svg {
+  opacity: 0.6;
+  transform: translateY(-5px) scale(1.05);
 }
 
 .empty-state p {
-  font-size: 14px;
-  margin-bottom: 8px;
-  color: #666;
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  animation: fadeIn var(--transition-slower) var(--ease-out) 0.3s both;
 }
 
 .empty-state small {
-  font-size: 12px;
-  color: #999;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  opacity: 0.8;
+  animation: fadeIn var(--transition-slower) var(--ease-out) 0.5s both;
 }
 
-/* Animations */
-@keyframes slideIn {
+/* ============================================
+   ANIMATIONS & KEYFRAMES
+   ============================================ */
+@keyframes containerFadeIn {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
   }
   to {
     opacity: 1;
@@ -285,36 +544,119 @@ body {
   }
 }
 
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 @keyframes fadeOut {
   from {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) translateX(0);
   }
   to {
     opacity: 0;
-    transform: scale(0.8);
+    transform: scale(0.9) translateX(-20px);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
   }
 }
 
 .note-item.deleting {
-  animation: fadeOut 0.3s ease;
+  animation: fadeOut var(--transition-slow) var(--ease-in) forwards;
 }
 
-/* Scrollbar Styling */
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
 .notes-section::-webkit-scrollbar {
   width: 6px;
 }
 
 .notes-section::-webkit-scrollbar-track {
-  background: #f5f7fa;
+  background: var(--color-bg-primary);
 }
 
 .notes-section::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 3px;
+  background: var(--color-text-tertiary);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-base) var(--ease-smooth);
 }
 
 .notes-section::-webkit-scrollbar-thumb:hover {
-  background: #999;
+  background: var(--color-text-secondary);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+.fade-in {
+  animation: fadeIn var(--transition-base) var(--ease-out);
+}
+
+.slide-in {
+  animation: slideIn var(--transition-base) var(--ease-out);
 }
 

@@ -1,50 +1,125 @@
 /**
  * Content Script Styles - Floating button and notification
+ * Advanced CSS with Custom Properties and Smooth Animations
  */
 
+/* ============================================
+   CSS CUSTOM PROPERTIES
+   ============================================ */
+:root {
+  /* Colors */
+  --sn-color-primary: #1a1a1a;
+  --sn-color-primary-dark: #000000;
+  --sn-color-bg: #f5f7fa;
+  --sn-color-bg-secondary: #ffffff;
+  --sn-color-border: #e0e0e0;
+  --sn-color-text: #333333;
+  --sn-color-text-secondary: #666666;
+  --sn-color-text-tertiary: #999999;
+  --sn-color-success: #10b981;
+  --sn-color-success-light: #d1fae5;
+  --sn-color-success-dark: #065f46;
+  --sn-color-error: #ef4444;
+  --sn-color-error-light: #fee2e2;
+  --sn-color-error-dark: #991b1b;
+  
+  /* Shadows */
+  --sn-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --sn-shadow-lg: 0 6px 20px rgba(0, 0, 0, 0.25);
+  --sn-shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.3);
+  
+  /* Transitions */
+  --sn-transition-fast: 150ms;
+  --sn-transition-base: 250ms;
+  --sn-transition-slow: 350ms;
+  --sn-ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --sn-ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --sn-ease-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  /* Spacing */
+  --sn-space-sm: 8px;
+  --sn-space-md: 12px;
+  --sn-space-lg: 16px;
+  
+  /* Border Radius */
+  --sn-radius-md: 8px;
+  --sn-radius-lg: 12px;
+  --sn-radius-full: 9999px;
+  
+  /* Gradients */
+  --sn-gradient-primary: linear-gradient(135deg, var(--sn-color-primary) 0%, var(--sn-color-primary-dark) 100%);
+  
+  /* Z-index */
+  --sn-z-button: 999999;
+  --sn-z-overlay: 999998;
+  --sn-z-popup: 999999;
+}
+
+/* ============================================
+   FLOATING BUTTON
+   ============================================ */
 .secure-note-btn {
   position: fixed;
   bottom: 20px;
   right: 20px;
   width: 56px;
   height: 56px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border-radius: var(--sn-radius-full);
+  background: var(--sn-gradient-primary);
+  box-shadow: var(--sn-shadow-md);
+  display: grid;
+  place-items: center;
   cursor: pointer;
-  z-index: 999999;
-  transition: all 0.3s ease;
+  z-index: var(--sn-z-button);
+  transition: all var(--sn-transition-base) var(--sn-ease-smooth);
   border: none;
   outline: none;
+  animation: fadeInScale var(--sn-transition-slow) var(--sn-ease-bounce);
+  overflow: hidden;
+}
+
+.secure-note-btn::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+  transform: scale(0);
+  transition: transform var(--sn-transition-slow) var(--sn-ease-elastic);
+}
+
+.secure-note-btn:hover::before {
+  transform: scale(1);
 }
 
 .secure-note-btn:hover {
-  transform: scale(1.1) rotate(90deg);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+  transform: scale(1.15) rotate(90deg);
+  box-shadow: var(--sn-shadow-lg);
 }
 
 .secure-note-btn:active {
   transform: scale(0.95) rotate(90deg);
+  transition: transform var(--sn-transition-fast) var(--sn-ease-smooth);
 }
 
 .secure-note-btn svg {
   pointer-events: none;
+  transition: all var(--sn-transition-base) var(--sn-ease-smooth);
 }
 
-/* Popup Overlay */
+/* ============================================
+   POPUP OVERLAY
+   ============================================ */
 .secure-note-popup {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 999998;
+  z-index: var(--sn-z-overlay);
   display: none;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
@@ -54,49 +129,71 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: all var(--sn-transition-slow) var(--sn-ease-smooth);
 }
 
 .secure-note-popup.show .secure-note-popup-overlay {
   opacity: 1;
 }
 
-/* Popup Content */
+/* ============================================
+   POPUP CONTENT
+   ============================================ */
 .secure-note-popup-content {
   position: relative;
-  background: #f5f7fa;
-  border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  background: var(--sn-color-bg);
+  border-radius: var(--sn-radius-lg);
+  box-shadow: var(--sn-shadow-xl);
   width: 90%;
   max-width: 400px;
-  z-index: 999999;
-  transform: scale(0.9) translateY(20px);
+  z-index: var(--sn-z-popup);
+  transform: scale(0.8) translateY(40px) rotateX(10deg);
   opacity: 0;
-  transition: all 0.3s ease;
+  transition: all var(--sn-transition-slow) var(--sn-ease-bounce);
   overflow: hidden;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
 }
 
 .secure-note-popup.show .secure-note-popup-content {
-  transform: scale(1) translateY(0);
+  transform: scale(1) translateY(0) rotateX(0deg);
   opacity: 1;
 }
 
-/* Popup Header */
+/* ============================================
+   POPUP HEADER
+   ============================================ */
 .secure-note-popup-header {
-  background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+  background: var(--sn-gradient-primary);
   color: white;
-  padding: 16px;
+  padding: var(--sn-space-lg);
   position: relative;
   text-align: center;
+  overflow: hidden;
+}
+
+.secure-note-popup-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: shimmerPopup 3s infinite;
 }
 
 .secure-note-popup-header h3 {
-  margin: 0 0 6px 0;
+  margin: 0 0 var(--sn-space-sm) 0;
   font-size: 18px;
   font-weight: 600;
+  letter-spacing: -0.3px;
+  color: white !important;
+  position: relative;
+  z-index: 1;
 }
 
 .secure-note-popup-domain {
@@ -104,104 +201,145 @@
   opacity: 0.9;
   font-weight: 400;
   word-break: break-all;
+  color: white !important;
+  position: relative;
+  z-index: 1;
 }
 
 .secure-note-popup-close {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: var(--sn-space-lg);
+  right: var(--sn-space-lg);
   background: rgba(255, 255, 255, 0.2);
   border: none;
   color: white;
   font-size: 28px;
   width: 32px;
   height: 32px;
-  border-radius: 50%;
+  border-radius: var(--sn-radius-full);
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   line-height: 1;
-  transition: all 0.2s ease;
+  transition: all var(--sn-transition-base) var(--sn-ease-smooth);
   padding: 0;
+  z-index: 2;
 }
 
 .secure-note-popup-close:hover {
   background: rgba(255, 255, 255, 0.3);
-  transform: rotate(90deg);
+  transform: rotate(90deg) scale(1.1);
 }
 
-/* Popup Body */
+.secure-note-popup-close:active {
+  transform: rotate(90deg) scale(0.95);
+}
+
+/* ============================================
+   POPUP BODY
+   ============================================ */
 .secure-note-popup-body {
-  padding: 16px;
-  background: white;
-  border-bottom: 1px solid #e0e0e0;
+  padding: var(--sn-space-lg);
+  background: var(--sn-color-bg-secondary);
+  border-bottom: 1px solid var(--sn-color-border);
 }
 
 .secure-note-popup-textarea {
   width: 100%;
-  padding: 10px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
+  padding: var(--sn-space-md);
+  border: 2px solid var(--sn-color-border);
+  border-radius: var(--sn-radius-md);
   font-family: inherit;
   font-size: 14px;
   resize: vertical;
   min-height: 100px;
-  transition: border-color 0.3s ease;
+  transition: all var(--sn-transition-base) var(--sn-ease-smooth);
   box-sizing: border-box;
-  background: white;
-  color: #333;
+  background: var(--sn-color-bg-secondary);
+  color: var(--sn-color-text);
 }
 
 .secure-note-popup-textarea:focus {
   outline: none;
-  border-color: #333;
+  border-color: var(--sn-color-text);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+  transform: scale(1.01);
 }
 
 .secure-note-popup-textarea::placeholder {
-  color: #999;
+  color: var(--sn-color-text-tertiary);
 }
 
-/* Popup Footer */
+/* ============================================
+   POPUP FOOTER
+   ============================================ */
 .secure-note-popup-footer {
-  padding: 16px;
-  display: flex;
-  gap: 10px;
+  padding: var(--sn-space-lg);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sn-space-md);
 }
 
 .secure-note-popup-btn {
-  flex: 1;
-  padding: 10px 16px;
+  padding: var(--sn-space-md) var(--sn-space-lg);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--sn-radius-md);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--sn-transition-base) var(--sn-ease-smooth);
   font-family: inherit;
+  position: relative;
+  overflow: hidden;
+}
+
+.secure-note-popup-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width var(--sn-transition-slow) var(--sn-ease-smooth),
+              height var(--sn-transition-slow) var(--sn-ease-smooth);
+}
+
+.secure-note-popup-btn:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .secure-note-popup-btn-cancel {
   background: #f0f0f0;
-  color: #666;
+  color: var(--sn-color-text-secondary);
 }
 
 .secure-note-popup-btn-cancel:hover {
   background: #e0e0e0;
+  transform: translateY(-2px);
+  box-shadow: var(--sn-shadow-md);
+}
+
+.secure-note-popup-btn-cancel:active {
+  transform: translateY(0);
 }
 
 .secure-note-popup-btn-save {
-  background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+  background: var(--sn-gradient-primary);
   color: white;
 }
 
 .secure-note-popup-btn-save:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
+  box-shadow: var(--sn-shadow-md);
 }
 
 .secure-note-popup-btn-save:active {
   transform: translateY(0);
+  transition: transform var(--sn-transition-fast) var(--sn-ease-smooth);
 }
 
 .secure-note-popup-btn-save:disabled {
@@ -210,33 +348,41 @@
   transform: none;
 }
 
-/* Popup Message */
+/* ============================================
+   POPUP MESSAGE
+   ============================================ */
 .secure-note-popup-message {
-  padding: 12px 16px;
-  margin: 0 16px 16px 16px;
-  border-radius: 8px;
+  padding: var(--sn-space-md) var(--sn-space-lg);
+  margin: 0 var(--sn-space-lg) var(--sn-space-lg) var(--sn-space-lg);
+  border-radius: var(--sn-radius-md);
   font-size: 13px;
   text-align: center;
   display: none;
+  animation: slideInMessage var(--sn-transition-base) var(--sn-ease-bounce);
 }
 
 .secure-note-popup-message.success {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--sn-color-success-light);
+  color: var(--sn-color-success-dark);
   border: 1px solid #6ee7b7;
 }
 
 .secure-note-popup-message.error {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--sn-color-error-light);
+  color: var(--sn-color-error-dark);
   border: 1px solid #fca5a5;
 }
 
-/* Animation for button appearance */
+/* ============================================
+   ANIMATIONS & KEYFRAMES
+   ============================================ */
 @keyframes fadeInScale {
   from {
     opacity: 0;
     transform: scale(0);
+  }
+  50% {
+    transform: scale(1.1);
   }
   to {
     opacity: 1;
@@ -244,7 +390,43 @@
   }
 }
 
-.secure-note-btn {
-  animation: fadeInScale 0.3s ease;
+@keyframes shimmerPopup {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes slideInMessage {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Pulse animation for important elements */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Bounce animation */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
 }
 
