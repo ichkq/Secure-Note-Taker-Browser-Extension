@@ -1,124 +1,144 @@
 # Secure Note Taker Browser Extension
 
-A Chrome browser extension that allows users to store and manage encrypted notes for specific websites.
+A lightweight Chrome browser extension that enables users to create and manage encrypted, domain-specific notes directly from any webpage.
 
-## Features
+## Table of Contents
 
-- 🔒 **Encrypted Storage**: Notes are encrypted using Caesar cipher + Base64 encoding before storage
-- 🌐 **Domain-Specific**: Notes are organized by website domain
-- 📝 **Easy Access**: Floating button on every webpage for quick access
-- 💾 **Persistent Storage**: Notes persist across browser sessions
-- 🎨 **Modern UI**: Clean and intuitive interface
-- ⚡ **Lightweight**: Pure vanilla JavaScript, no frameworks or libraries
+- [Installation](#installation)
+- [Encryption Approach](#encryption-approach)
+- [Design Decisions](#design-decisions)
+- [Known Limitations](#known-limitations)
+- [Usage](#usage)
+- [Technical Specifications](#technical-specifications)
+
+---
 
 ## Installation
 
-### For Chrome/Edge
+### Prerequisites
 
-1. **Download the Extension**
-   - Clone or download this repository to your local machine
+- Google Chrome (version 88 or higher) or Microsoft Edge (Chromium-based)
+- Developer mode access to browser extensions
 
-2. **Open Extension Management Page**
-   - Chrome: Navigate to `chrome://extensions/`
-   - Edge: Navigate to `edge://extensions/`
+### Installation Steps
+
+1. **Clone or Download the Repository**
+   ```bash
+   git clone <repository-url>
+   cd Secure-Note-Taker-Browser-Extension-main
+   ```
+   
+   Or download and extract the ZIP file from GitHub.
+
+2. **Open Extension Management**
+   - **Chrome**: Navigate to `chrome://extensions/`
+   - **Edge**: Navigate to `edge://extensions/`
 
 3. **Enable Developer Mode**
-   - Toggle the "Developer mode" switch in the top-right corner
+   - Toggle the "Developer mode" switch in the top-right corner of the extensions page
 
 4. **Load the Extension**
-   - Click "Load unpacked"
-   - Select the `viso_test` folder containing the extension files
-   - The extension should now appear in your extensions list
+   - Click the "Load unpacked" button
+   - Select the directory containing the extension files
+   - The extension icon should appear in your browser toolbar
 
-5. **Create Extension Icons (Optional)**
-   - The extension will work without icons, but you can add custom icons
-   - Create PNG files named `icon16.png`, `icon48.png`, and `icon128.png`
-   - Place them in the extension directory
+5. **Verify Installation**
+   - Visit any website
+   - A purple floating button (➕) should appear in the bottom-right corner
+   - Click the extension icon in the toolbar to access the main interface
 
-## Usage
+---
 
-### Adding a Note
+## Encryption Approach
 
-**Method 1: Using the Floating Button (Quick Add)**
-1. Visit any website
-2. Look for the purple floating button in the bottom-right corner
-3. Click the "+" button
-4. A popup dialog appears on the page
-5. Type your note in the text area
-6. Click "Save Note" or press Ctrl/Cmd + Enter
-7. Note is encrypted and saved automatically!
+### Overview
 
-**Method 2: Using the Extension Icon (Full Interface)**
-1. Click the extension icon in your browser toolbar
-2. Type your note in the text area
-3. Click "Add Note" or press Ctrl/Cmd + Enter
-4. View all notes for the current domain
+The extension implements a **two-layer encryption strategy** combining Caesar cipher transformation with Base64 encoding to provide basic data obfuscation for stored notes.
 
-### Viewing Notes
+### Encryption Process
 
-1. Click the extension icon in your browser toolbar
-2. All notes for the current website domain will be displayed
-3. Each note shows:
-   - The note content (decrypted)
-   - Timestamp when it was created
+Notes undergo a three-step encryption pipeline before storage:
 
-### Deleting a Note
+1. **UTF-8 Encoding**
+   - Text is first encoded using `encodeURIComponent()` to properly handle Unicode characters
+   - Ensures international character support across different languages
 
-1. Open the extension popup
-2. Hover over the note you want to delete
-3. Click the red "×" button that appears in the top-right corner
-4. The note will be deleted immediately
+2. **Caesar Cipher Transformation**
+   - Each character's ASCII code is shifted by **7 positions**
+   - Formula: `encrypted_char = char.code + 7`
+   - Provides basic character-level obfuscation
 
-### Organizing Notes
+3. **Base64 Encoding**
+   - The Caesar-encrypted string is encoded to Base64 using `btoa()`
+   - Produces alphanumeric output suitable for safe storage
 
-- Notes are automatically organized by website domain
-- When you visit different websites, you'll see different notes
-- Notes persist across:
-  - Page reloads
-  - Browser restarts
-  - Different pages on the same domain
+### Decryption Process
 
-## File Structure
+The decryption process reverses the encryption pipeline:
 
-```
-/viso_test
-├── manifest.json          # Extension configuration (Manifest V3)
-├── popup.html            # Popup interface HTML
-├── popup.js              # Popup logic
-├── popup.css             # Popup styles
-├── content.js            # Content script (floating button)
-├── content.css           # Content script styles
-├── background.js         # Service worker
-├── utils.js              # Encryption/decryption utilities
-└── README.md             # This file
-```
+1. Base64 decode → 2. Caesar decipher (shift -7) → 3. UTF-8 decode
 
-## Technical Details
+### Security Context
 
-### Architecture
+**⚠️ Important**: This encryption method provides **basic obfuscation**, not cryptographic security. It protects against casual browsing of browser storage but is not suitable for sensitive data like passwords, financial information, or confidential documents.
 
-- **Manifest Version**: V3 (latest Chrome extension standard)
-- **Storage**: `chrome.storage.local` API
-- **Encryption**: Caesar cipher (shift 7) + Base64 encoding
-- **Permissions**: `storage`, `activeTab`
+For production-grade security, consider implementing:
+- **Web Crypto API** (AES-256-GCM encryption)
+- **Password-based key derivation** (PBKDF2)
+- **End-to-end encryption** with user-controlled keys
 
-### Encryption
+---
 
-Notes are encrypted before storage using a two-step process:
+## Design Decisions
 
-1. **Caesar Cipher**: Each character's code is shifted by 7
-2. **Base64 Encoding**: The result is encoded in Base64
+### Architecture Choices
 
-This provides basic obfuscation. For production use, consider stronger encryption methods like AES.
+#### 1. **Manifest V3 Compliance**
+- **Decision**: Built using Chrome Extension Manifest V3
+- **Rationale**: Future-proof design aligned with Chrome's latest standards and security requirements
+- **Impact**: Cannot programmatically open popups; requires service worker instead of background scripts
 
-### Storage Format
+#### 2. **Domain-Based Note Organization**
+- **Decision**: Notes are automatically categorized by website domain (`hostname`)
+- **Rationale**: Provides contextual relevance and automatic organization without user intervention
+- **Implementation**: Uses `window.location.hostname` for domain extraction
+
+#### 3. **Dual Interface Pattern**
+- **Decision**: Provides both a floating in-page button and toolbar popup
+- **Rationale**: 
+  - Floating button: Quick access without context switching
+  - Toolbar popup: Full note management interface
+- **Benefit**: Balances convenience with functionality
+
+#### 4. **Client-Side Storage Only**
+- **Decision**: All data stored locally using `chrome.storage.local`
+- **Rationale**: 
+  - Privacy-first approach (no server communication)
+  - Eliminates dependency on external services
+  - Faster read/write operations
+- **Trade-off**: No cross-device synchronization
+
+#### 5. **Vanilla JavaScript Implementation**
+- **Decision**: No frameworks (React, Vue, etc.)
+- **Rationale**: 
+  - Minimal bundle size (~10KB total)
+  - Reduced complexity and dependencies
+  - Faster load times
+- **Benefit**: Extension runs efficiently with minimal resource consumption
+
+#### 6. **Message Passing Architecture**
+- **Decision**: Content scripts communicate with background service worker via `chrome.runtime.sendMessage`
+- **Rationale**: Manifest V3 requirement for isolated script contexts
+- **Pattern**: Content script → Background service worker → Storage API
+
+### Storage Schema
 
 ```javascript
 {
   "notes": {
     "example.com": [
       {
-        "content": "encrypted_content_here",
+        "content": "base64_encrypted_string",
         "timestamp": 1696723200000,
         "domain": "example.com"
       }
@@ -127,90 +147,173 @@ This provides basic obfuscation. For production use, consider stronger encryptio
 }
 ```
 
-## Browser Compatibility
+### Assumptions
 
-- ✅ **Chrome**: Fully supported (version 88+)
-- ✅ **Edge**: Fully supported (Chromium-based)
-- ⚠️ **Firefox**: Requires manifest modifications
-- ❌ **Safari**: Not supported (requires different extension format)
+1. Users trust their local browser storage security
+2. Basic obfuscation is sufficient for note content
+3. Domain-based organization aligns with user mental models
+4. Users primarily take notes on a single device
+5. Notes are text-based (no rich media support)
 
-## Security Considerations
+---
 
-⚠️ **Important Security Notes**:
+## Known Limitations
 
-1. The encryption used is **basic obfuscation**, not military-grade encryption
-2. Notes are stored locally in the browser's storage
-3. Do NOT store highly sensitive information (passwords, credit cards, etc.)
-4. For better security, consider:
-   - Using Web Crypto API for stronger encryption
-   - Implementing password protection
-   - Using server-side storage with proper authentication
+### Security Limitations
 
-## Troubleshooting
+1. **Basic Encryption**
+   - Caesar cipher + Base64 provides obfuscation, not cryptographic security
+   - Vulnerable to reverse engineering
+   - **Recommendation**: Do not store sensitive credentials or financial data
 
-### Extension Not Loading
-- Ensure Developer Mode is enabled
-- Check the console for error messages
-- Verify all files are present
+2. **Local Storage Vulnerabilities**
+   - Notes stored in browser's local storage can be accessed by:
+     - Other extensions with storage permissions
+     - Malware with file system access
+     - Physical access to the device
 
-### Floating Button Not Appearing
-- Refresh the webpage after installing the extension
-- Check if the website blocks content scripts
-- Open browser console and look for errors
+3. **No Password Protection**
+   - Extension does not implement authentication
+   - Anyone with access to the browser can view notes
 
-### Notes Not Saving
-- Check browser storage permissions
-- Verify the domain is being extracted correctly
-- Open DevTools → Application → Storage → Local Storage
+### Functional Limitations
 
-### Cannot Open Popup from Floating Button
-- This is a Manifest V3 limitation
-- Users must click the extension icon in the toolbar
-- The floating button serves as a reminder/quick indicator
+1. **No Programmatic Popup Opening**
+   - Manifest V3 restriction prevents content scripts from opening the popup programmatically
+   - Floating button serves as a visual reminder only
+   - **Workaround**: Users must click the toolbar icon manually
+
+2. **Browser Compatibility**
+   - ✅ **Supported**: Chrome 88+, Edge (Chromium)
+   - ⚠️ **Requires Modification**: Firefox (Manifest V2/V3 differences)
+   - ❌ **Not Supported**: Safari (different extension API)
+
+3. **No Cross-Device Sync**
+   - Notes are local to the browser instance
+   - No built-in synchronization mechanism
+   - **Workaround**: Manual export/import (not yet implemented)
+
+4. **Content Script Injection Blocked on Some Pages**
+   - Cannot run on browser internal pages (`chrome://`, `about://`)
+   - May be blocked by strict Content Security Policies (CSP)
+   - Some enterprise websites may prevent content script execution
+
+5. **No Rich Text Support**
+   - Notes are plain text only
+   - No formatting, images, or attachments
+   - Maximum practical note length: ~10,000 characters (browser storage limit)
+
+6. **Domain Collision**
+   - Subdomains share notes with parent domain (e.g., `app.example.com` ≠ `example.com`)
+   - No distinction between `http` and `https` versions
+
+### Performance Limitations
+
+1. **Storage Quota**
+   - `chrome.storage.local` has a 10MB limit
+   - Approximately 5,000-10,000 notes depending on average length
+
+2. **No Search/Filter Functionality**
+   - All notes for a domain are displayed at once
+   - No built-in search, tags, or categories
+
+### Data Loss Scenarios
+
+1. **Browser Data Clear**: Notes deleted if user clears browser data/cache
+2. **Extension Uninstall**: All notes are permanently removed
+3. **No Backup Mechanism**: No automatic or manual backup system
+
+---
+
+## Usage
+
+### Adding Notes
+
+**Via Floating Button:**
+1. Navigate to any website
+2. Click the purple ➕ button (bottom-right corner)
+3. Enter your note in the dialog
+4. Press `Ctrl/Cmd + Enter` or click "Add Note"
+
+**Via Extension Popup:**
+1. Click the extension icon in the toolbar
+2. Type your note in the text area
+3. Click "Add Note" or press `Ctrl/Cmd + Enter`
+
+### Viewing Notes
+
+1. Click the extension icon
+2. All notes for the current domain are displayed with timestamps
+3. Notes are automatically decrypted for display
+
+### Deleting Notes
+
+1. Open the extension popup
+2. Hover over any note
+3. Click the red ✕ button in the top-right corner of the note
+
+---
+
+## Technical Specifications
+
+| Specification | Value |
+|--------------|-------|
+| **Manifest Version** | V3 |
+| **Primary Language** | Vanilla JavaScript (ES6+) |
+| **Storage API** | `chrome.storage.local` |
+| **Required Permissions** | `storage`, `activeTab` |
+| **Encryption Method** | Caesar Cipher (shift 7) + Base64 |
+| **Architecture** | Content Script + Background Service Worker + Popup UI |
+| **File Structure** | 8 core files (~10KB total) |
+
+### File Structure
+
+```
+Secure-Note-Taker-Browser-Extension-main/
+├── manifest.json          # Extension configuration (Manifest V3)
+├── background.js          # Service worker for message handling
+├── content.js             # Injected floating button UI
+├── content.css            # Styles for floating button
+├── popup.html             # Extension popup interface
+├── popup.js               # Popup logic and note management
+├── popup.css              # Popup styles
+├── utils.js               # Encryption/decryption utilities
+└── icons/                 # Extension icons (16x16, 48x48, 128x128)
+```
+
+### Browser Permissions
+
+- **`storage`**: Store and retrieve encrypted notes
+- **`activeTab`**: Access current tab's domain for note organization
+
+---
 
 ## Development
 
-### Local Development
-1. Make changes to any file
-2. Go to `chrome://extensions/`
-3. Click the refresh icon on the extension card
-4. Test your changes
+### Local Development Setup
 
-### Adding New Features
-- Modify `popup.js` for UI logic changes
-- Modify `content.js` for webpage interaction
-- Modify `utils.js` for encryption/utility functions
-- Update `manifest.json` for new permissions or scripts
+1. Make changes to source files
+2. Navigate to `chrome://extensions/`
+3. Click the refresh icon (🔄) on the extension card
+4. Test changes in browser
 
-## License
+### Debugging
 
-This project is provided as-is for educational and personal use.
+- **Popup**: Right-click extension icon → "Inspect popup"
+- **Content Script**: Open DevTools on any webpage → Console tab
+- **Background Worker**: `chrome://extensions/` → "Inspect views: service worker"
 
-## Future Enhancements
-
-Potential improvements for future versions:
-
-- [ ] Stronger encryption (AES-256)
-- [ ] Password protection
-- [ ] Note categories/tags
-- [ ] Search functionality
-- [ ] Export/import notes
-- [ ] Sync across devices
-- [ ] Rich text editor
-- [ ] Note sharing
-- [ ] Dark mode
+---
 
 ## Support
 
 For issues or questions:
-1. Check the troubleshooting section
-2. Review browser console for errors
-3. Verify extension permissions
+1. Check browser console for error messages
+2. Verify extension permissions in `chrome://extensions/`
+3. Ensure you're using a supported browser version
 
 ---
 
 **Version**: 1.0.0  
-**Manifest**: V3  
-**Completion Time**: 5-6 hours  
-**Tech Stack**: Vanilla JavaScript, CSS, HTML
-
+**License**: For educational and personal use  
+**Last Updated**: October 2025
